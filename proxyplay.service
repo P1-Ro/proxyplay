@@ -1,0 +1,12 @@
+[Unit]
+Description=Automatically sends CEC signal when bt source starts/stops playing
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=python /opt/proxyplay/handler.py
+
+[Install]
+WantedBy=multi-user.target
