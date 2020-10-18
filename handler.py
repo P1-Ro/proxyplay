@@ -1,4 +1,5 @@
 import re
+import time
 
 import cec
 import dbus
@@ -25,8 +26,9 @@ class Handler:
 
         self.device = dbus.Interface(self.proxy, "org.bluez.Device1")
         self.device.connect_to_signal("PropertiesChanged", self.handle_device_change, dbus_interface=PROPERTIES)
-
         self.init_loop()
+
+        GObject.MainLoop().run()
 
     def init_loop(self):
         fd_string = self.proxy.Introspect()
@@ -40,8 +42,6 @@ class Handler:
         player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
         player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
 
-        GObject.MainLoop().run()
-
     def power_on(self, event):
         cec.set_active_source()
         if event is not None:
@@ -52,10 +52,9 @@ class Handler:
 
     def handle_device_change(self, iface, obj, params):
         if "Connected" in obj:
-            if obj["Connected"]:
+            if bool(obj["Connected"]):
+                time.sleep(SHUTDOWN_TIMEOUT)
                 self.init_loop()
-            else:
-                self.device.Connect()
 
     def handle_media_change(self, iface, obj, params):
         if "State" in obj:

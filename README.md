@@ -35,7 +35,6 @@ Service to automatically turn CEC enabled devices on and off when Bluetooth devi
 * `MAC_ADDRESS`: Address of BT source device, currently only single device is supported and you must specify it.
 * `SHUTDOWN_TIMEOUT`: Timeout after which CEC device is turned off. Tweak this iff CEC device is turned off when skipping songs.
 
-## Usage
-1. On startup of service tries to connect to BT address.
-2. When connected you can start media playback and CEC device will be turned on
-3. When playback stops CEC device will be turned off
+## How it works
+1. When connected you can start media playback and CEC device will be turned on
+2. When playback stops CEC device will be turned off
