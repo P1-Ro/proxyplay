@@ -9,7 +9,7 @@ from config import MAC_ADDRESS, SHUTDOWN_TIMEOUT
 
 PROPERTIES = "org.freedesktop.DBus.Properties"
 
-c
+
 class Handler:
     def __init__(self):
         self.event_id = None

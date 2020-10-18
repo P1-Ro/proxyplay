@@ -1,4 +1,4 @@
-# ![ProxyPlay](https://raw.githubusercontent.com/P1-Ro/proxyplay/master/logo.png)
+# ![ProxyPlay](https://raw.githubusercontent.com/P1-Ro/proxyplay/master/logo.png) <a href="https://codeclimate.com/github/P1-Ro/proxyplay/maintainability"><img src="https://api.codeclimate.com/v1/badges/6b867450360436b378e9/maintainability" /></a> [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Service to automatically turn CEC enabled devices on and off when Bluetooth device starts/stops playback.
 
