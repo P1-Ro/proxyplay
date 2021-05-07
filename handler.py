@@ -33,14 +33,16 @@ class Handler:
     def init_loop(self):
         fd_string = self.proxy.Introspect()
         matcher = re.search("node name=\"(fd\\d+)\"", fd_string)
-        fd = None
+
         if matcher:
             fd = matcher.group(1)
             print(fd)
 
-        proxy = self.bus.get_object('org.bluez', self.address + "/" + fd)
-        player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
-        player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
+            proxy = self.bus.get_object('org.bluez', self.address + "/" + fd)
+            player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
+            player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
+        else:
+            print("no device connected")
 
     def power_on(self, event):
         cec.set_active_source()
