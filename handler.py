@@ -4,7 +4,7 @@ import time
 import cec
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
-from gi.repository import GObject
+from gi.repository import GLib
 
 from config import MAC_ADDRESS, SHUTDOWN_TIMEOUT
 
@@ -28,7 +28,7 @@ class Handler:
         self.device.connect_to_signal("PropertiesChanged", self.handle_device_change, dbus_interface=PROPERTIES)
         self.init_loop()
 
-        GObject.MainLoop().run()
+        GLib.MainLoop().run()
 
     def init_loop(self):
         fd_string = self.proxy.Introspect()
@@ -45,10 +45,11 @@ class Handler:
     def power_on(self, event):
         cec.set_active_source()
         if event is not None:
-            GObject.source_remove(event)
+            GLib.source_remove(event)
 
     def power_off(self):
         self.sound_bar.standby()
+        return False
 
     def handle_device_change(self, iface, obj, params):
         if "Connected" in obj:
@@ -61,7 +62,7 @@ class Handler:
             if obj["State"] == "active":
                 self.power_on(self.event_id)
             elif obj["State"] == "idle":
-                self.event_id = GObject.timeout_add_seconds(SHUTDOWN_TIMEOUT, self.power_off)
+                self.event_id = GLib.timeout_add_seconds(SHUTDOWN_TIMEOUT, self.power_off)
 
 
 if __name__ == '__main__':
