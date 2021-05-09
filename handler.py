@@ -44,25 +44,27 @@ class Handler:
         else:
             print("no device connected")
 
-    def power_on(self, event):
+    def power_on(self):
         cec.set_active_source()
-        if event is not None:
-            GLib.source_remove(event)
+        if self.event_id is not None:
+            GLib.source_remove(self.event_id)
 
     def power_off(self):
         self.sound_bar.standby()
+        self.event_id = None
         return False
 
     def handle_device_change(self, iface, obj, params):
-        if "Connected" in obj:
-            if bool(obj["Connected"]):
-                time.sleep(SHUTDOWN_TIMEOUT)
-                self.init_loop()
+        print(obj)
+        if bool(obj["Connected"]):
+            time.sleep(SHUTDOWN_TIMEOUT)
+            self.init_loop()
 
     def handle_media_change(self, iface, obj, params):
         if "State" in obj:
+            print(obj["State"])
             if obj["State"] == "active":
-                self.power_on(self.event_id)
+                self.power_on()
             elif obj["State"] == "idle":
                 self.event_id = GLib.timeout_add_seconds(SHUTDOWN_TIMEOUT, self.power_off)
 
