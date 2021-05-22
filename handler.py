@@ -48,6 +48,7 @@ class Handler:
         cec.set_active_source()
         if self.event_id is not None:
             GLib.source_remove(self.event_id)
+            self.event_id = None
 
     def power_off(self):
         self.sound_bar.standby()
