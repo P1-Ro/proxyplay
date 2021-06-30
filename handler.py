@@ -1,14 +1,32 @@
 import re
 import time
-
+import logging
 import cec
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 from gi.repository import GLib
+from systemd.journal import JournaldLogHandler
 
 from config import MAC_ADDRESS, SHUTDOWN_TIMEOUT
 
 PROPERTIES = "org.freedesktop.DBus.Properties"
+
+# get an instance of the logger object this module will use
+logger = logging.getLogger(__name__)
+
+# instantiate the JournaldLogHandler to hook into systemd
+journald_handler = JournaldLogHandler()
+
+# set a formatter to include the level name
+journald_handler.setFormatter(logging.Formatter(
+    '[%(levelname)s] %(message)s'
+))
+
+# add the journald handler to the current logger
+logger.addHandler(journald_handler)
+
+# optionally set the logging level
+logger.setLevel(logging.DEBUG)
 
 
 class Handler:
@@ -36,13 +54,13 @@ class Handler:
 
         if matcher:
             fd = matcher.group(1)
-            print(fd)
+            logger.info(fd)
 
             proxy = self.bus.get_object('org.bluez', self.address + "/" + fd)
             player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
             player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
         else:
-            print("no device connected")
+            logger.info("no device connected")
 
     def power_on(self):
         cec.set_active_source()
@@ -56,14 +74,14 @@ class Handler:
         return False
 
     def handle_device_change(self, iface, obj, params):
-        print(obj)
+        logger.info(obj)
         if bool(obj["Connected"]):
             time.sleep(SHUTDOWN_TIMEOUT)
             self.init_loop()
 
     def handle_media_change(self, iface, obj, params):
         if "State" in obj:
-            print(obj["State"])
+            logger.info(obj["State"])
             if obj["State"] == "active":
                 self.power_on()
             elif obj["State"] == "idle":
