@@ -55,10 +55,10 @@ class Handler:
 
         if matcher:
             fd = matcher.group(1)
-            logger.info("device with file-descriptor: %d connected", fd)
+            logger.info("device with file-descriptor: %s connected", fd)
 
             if self.current_fd != fd:
-                logger.info("replacing old file-descriptor: %d with new one: %d", self.current_fd, fd)
+                logger.info("replacing old file-descriptor: %s with new one: %s", self.current_fd, fd)
 
                 self.current_fd = fd
                 proxy = self.bus.get_object('org.bluez', self.address + "/" + self.current_fd)
