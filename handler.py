@@ -32,6 +32,7 @@ logger.setLevel(logging.DEBUG)
 class Handler:
     def __init__(self):
         self.event_id = None
+        self.current_fd = None
 
         DBusGMainLoop(set_as_default=True)
 
@@ -54,11 +55,15 @@ class Handler:
 
         if matcher:
             fd = matcher.group(1)
-            logger.info(fd)
+            logger.info("device with file-descriptor: %d connected", fd)
 
-            proxy = self.bus.get_object('org.bluez', self.address + "/" + fd)
-            player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
-            player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
+            if self.current_fd != fd:
+                logger.info("replacing old file-descriptor: %d with new one: %d", self.current_fd, fd)
+
+                self.current_fd = fd
+                proxy = self.bus.get_object('org.bluez', self.address + "/" + self.current_fd)
+                player = dbus.Interface(proxy, "org.bluez.MediaTransport1")
+                player.connect_to_signal("PropertiesChanged", self.handle_media_change, dbus_interface=PROPERTIES)
         else:
             logger.info("no device connected")
 
